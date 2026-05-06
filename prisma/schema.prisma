@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tutor {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?   // maps to logoUrl if needed
+  phone         String?
+  centerName    String?
+  logoUrl       String?
+  language      String    @default("en") // "en" or "ta"
+  whatsappFrom  String?   // tutor's WhatsApp business number
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  students      Student[]
+  batches       Batch[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+// NextAuth Models
+model Account {
+  id                 String  @id @default(uuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user Tutor @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         Tutor    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Business Models
+model Batch {
+  id        String    @id @default(uuid())
+  name      String    // e.g. "NEET 2026 Morning Batch"
+  tutorId   String
+  tutor     Tutor     @relation(fields: [tutorId], references: [id])
+  students  Student[]
+  subjects  Subject[]
+}
+
+model Student {
+  id            String       @id @default(uuid())
+  name          String
+  parentName    String
+  parentPhone   String       // WhatsApp number with country code, e.g. +919876543210
+  reportToken   String       @unique @default(uuid())
+  tutorId       String
+  tutor         Tutor        @relation(fields: [tutorId], references: [id])
+  batchId       String?
+  batch         Batch?       @relation(fields: [batchId], references: [id])
+  feeAmount     Float?       // monthly fee in INR
+  feePaidUpto   DateTime?
+  attendance    Attendance[]
+  testScores    TestScore[]
+  createdAt     DateTime     @default(now())
+}
+
+model Subject {
+  id         String      @id @default(uuid())
+  name       String      // e.g. "Physics", "Chemistry"
+  batchId    String
+  batch      Batch       @relation(fields: [batchId], references: [id])
+  testScores TestScore[]
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id])
+  date       DateTime @db.Date
+  present    Boolean
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@unique([studentId, date])
+}
+
+model TestScore {
+  id          String   @id @default(uuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id])
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  testName    String   // e.g. "Unit Test 3", "Mock Exam"
+  score       Float
+  maxScore    Float
+  date        DateTime @db.Date
+  note        String?
+  createdAt   DateTime @default(now())
+}
+
+model DigestLog {
+  id         String   @id @default(uuid())
+  studentId  String
+  sentAt     DateTime @default(now())
+  status     String   // "sent" | "failed"
+  message    String?
+}

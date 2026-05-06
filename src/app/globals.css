@@ -2,32 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background: 45 100% 99%;
+    --foreground: 224 71% 4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+
+    /* Joyful Education Palette */
+    --primary: 215 80% 45%; /* Deep Trust Blue */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 45 93% 47%; /* Radiant Yellow/Amber */
+    --secondary-foreground: 224 71% 4%;
+
+    --muted: 190 30% 95%; /* Soft Sky Blue */
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent: Soft Mint/Sage */
+    --accent: 142 45% 44%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 215 80% 45%;
+
+    --radius: 1.5rem;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 210 40% 98%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 215 80% 60%;
+    --primary-foreground: 224 71% 4%;
+
+    --secondary: 45 93% 47%;
+    --secondary-foreground: 224 71% 4%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 142 45% 44%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 215 80% 60%;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  .premium-card {
+    @apply relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.03),0_1px_2px_rgba(0,0,0,0.02)] transition-all duration-300 dark:border-white/5 dark:bg-slate-950/50 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1;
+  }
+
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-2xl border border-white/30 dark:bg-black/70 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.05)];
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-display {
+    @apply font-black tracking-tight text-slate-900 dark:text-white;
+  }
+  
+  .text-gradient-joy {
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-primary via-primary to-secondary;
   }
 }
