@@ -2,8 +2,8 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: true,
+  secret: process.env.NEXTAUTH_SECRET || "namma-tuition-demo-secret-key-min-32-chars",
+  debug: process.env.NODE_ENV === "development",
   session: {
     strategy: "jwt",
   },

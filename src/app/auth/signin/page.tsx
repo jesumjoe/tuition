@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,11 +29,23 @@ export default function SignInPage() {
 
   const handleDemoLogin = async () => {
     setIsDemoLoading(true);
-    setTimeout(() => {
-      toast.success("Welcome to Namma Tuition!");
-      router.push("/");
+    try {
+      const result = await signIn("credentials", {
+        email: "demo@example.com",
+        password: "demo",
+        redirect: false,
+      });
+      if (result?.ok) {
+        toast.success("Welcome to Namma Tuition!");
+        router.push("/dashboard");
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
+    } catch {
+      toast.error("Something went wrong.");
+    } finally {
       setIsDemoLoading(false);
-    }, 800);
+    }
   };
 
   return (
